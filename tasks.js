@@ -27,27 +27,35 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content)
     // Google Tasks API.
 
     var cIndex = process.argv.indexOf('-c');
-    var hIndex = process.argv.indexOf('-h') == -1?
-      process.argv.indexOf('-?');
+    var hIndex = process.argv.indexOf('-h');
 
     if (hIndex >= 1)
     {
+        console.log(process.argv[0]);
+        console.log('\t-c [listTaskLists,listTasks id,createTask id task_text]');
+        console.log('\te.g.');
+        console.log('\t\t-c listTaskLists');
+        console.log('\t\t-c listTasks MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA');
+        console.log('\t\t-c createTask MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA \'My new special task\'');
     }
-    var command = process.argv[cIndex + 1];
-    switch (command)
+    else
     {
-        case 'listTaskLists':
-            authorize(JSON.parse(content), listTaskLists);
-            break;
-        case 'listTasks':
-            callArgs.id = process.argv[cIndex + 2];
-            authorize(JSON.parse(content), listTasks);
-            break;
-        case 'createTask':
-            callArgs.id = process.argv[cIndex + 2];
-            callArgs.task = {title: process.argv[cIndex + 3]};
-            authorize(JSON.parse(content), createTask);
-            break;
+        var command = process.argv[cIndex + 1];
+        switch (command)
+        {
+            case 'listTaskLists':
+                authorize(JSON.parse(content), listTaskLists);
+                break;
+            case 'listTasks':
+                callArgs.id = process.argv[cIndex + 2];
+                authorize(JSON.parse(content), listTasks);
+                break;
+            case 'createTask':
+                callArgs.id = process.argv[cIndex + 2];
+                callArgs.task = {title: process.argv[cIndex + 3]};
+                authorize(JSON.parse(content), createTask);
+                break;
+        }
     }
 });
 
@@ -184,20 +192,20 @@ function listTasks(auth)
             for (var i = 0; i < items.length; i++)
             {
                 var item = items[i];
-/*                if (item.parent !== undefined)
-                {   // we have a parent
-                    if (parentStack[parentStack.length] == item.parent)
-                    {   // same parent as last time
-                    }
-                    else
-                    {
+                /*                if (item.parent !== undefined)
+                 {   // we have a parent
+                 if (parentStack[parentStack.length] == item.parent)
+                 {   // same parent as last time
+                 }
+                 else
+                 {
 
-                    }
-                }
-                else
-                {   // no parent, it's a root task.
-                    parentStack = new Array();
-                }*/
+                 }
+                 }
+                 else
+                 {   // no parent, it's a root task.
+                 parentStack = new Array();
+                 }*/
                 //console.log(item);
                 if (Date.parse(item.due) < Date.now())
                 {   // item overdue

@@ -1,0 +1,22 @@
+{
+  "name": "node tasks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "quickstart.js",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "google-auth-library": "^0.9.7",
+    "googleapis": "^5.2.1",
+    "node-rest-client": "^1.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "svn.climbingvine.ca:/var/git/intelli-tasks.git"
+  },
+  "author": "",
+  "license": "ISC"
+}

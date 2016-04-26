@@ -6,3 +6,4 @@ client_secret.json
 .idea/libraries
 .idea/vcs.xml
 .idea/workspace.xml
+node_modules/
