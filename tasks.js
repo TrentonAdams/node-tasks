@@ -1,3 +1,4 @@
+#!/usr/bin/nodejs
 var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
@@ -11,7 +12,7 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'tasks-nodejs-quickstart.json';
 
-console.log('%o', process.argv);
+//console.log('%o', process.argv);
 
 var callArgs = {};
 
@@ -68,7 +69,7 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content)
  */
 function authorize(credentials, callback)
 {
-    console.log('%o', credentials)
+//    console.log('%o', credentials)
     var clientSecret = credentials.installed.client_secret;
     var clientId = credentials.installed.client_id;
     var redirectUrl = credentials.installed.redirect_uris[0];
@@ -208,28 +209,16 @@ function listTasks(auth)
                  }*/
                 //console.log(item);
                 if (Date.parse(item.due) < Date.now())
-                {   // item overdue
-                    console.log(chalk.styles.red.open);
-                    console.log('title: ', item.title);
-                    console.log('updated: ',
-                        new Date(item.updated));
-                    console.log(chalk.styles.red.close);
+                {   // item overdue, show red.
+                    console.log(chalk.red(' * '), item.title)
                 }
                 else if (item.status == 'completed')
-                {
-                    console.log(chalk.styles.green.open);
-                    console.log('title: ', item.title);
-                    console.log('updated: ',
-                        new Date(item.updated));
-                    console.log(chalk.styles.green.close);
+                {   // item completed, show green.
+                    console.log(chalk.green(' * '), item.title)
                 }
                 else
                 {
-                    console.log();
-                    console.log('title: ', item.title);
-                    console.log('updated: ',
-                        new Date(item.updated));
-                    console.log();
+                    console.log(' * ', item.title)
                 }
             }
         }
