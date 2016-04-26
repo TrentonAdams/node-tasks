@@ -1,0 +1,27 @@
+== Overview ==
+Assuming that you are running a bash command line, this is how you setup to run.
+
+* install node.js - specific to your platform
+* install npm - specific to your platform
+* checkout node-tasks
+* setup a google api key; you can google that! ;)
+* run tasks.js
+
+== Debian ==
+Below are the instructions that work for a debian based system.
+
+ sudo apt install nodejs npm
+ git clone https://github.com/TrentonAdams/node-tasks.git
+ cd node-tasks
+ npm install
+ ./tasks.js -h
+ ./tasks.js -c listTaskLists # list all the tasks lists you have
+ 
+ The last command will ask you to authorize the app.  In your browser, go to the url provided.  Copy and paste the key given to you back into the command line application.
+ 
+== Feature ==
+I'll be adding the following features...
+* use of names rather than IDs for the various commands
+* possible caching of information
+* more things as I need them.
+
