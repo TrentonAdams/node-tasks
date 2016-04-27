@@ -33,25 +33,25 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content)
     if (hIndex >= 1)
     {
         console.log(process.argv[0]);
-        console.log('\t-c [listTaskLists,listTasks id,createTask id task_text]');
+        console.log('\t-c [listtasklists,listtasks id,createTask id task_text]');
         console.log('\te.g.');
-        console.log('\t\t-c listTaskLists');
-        console.log('\t\t-c listTasks MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA');
-        console.log('\t\t-c createTask MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA \'My new special task\'');
+        console.log('\t\t-c listtasklists');
+        console.log('\t\t-c listtasks MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA');
+        console.log('\t\t-c createtask MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA \'My new special task\'');
     }
     else
     {
         var command = process.argv[cIndex + 1];
         switch (command)
         {
-            case 'listTaskLists':
-                authorize(JSON.parse(content), listTaskLists);
+            case 'listtasklists':
+                authorize(JSON.parse(content), listtasklists);
                 break;
-            case 'listTasks':
+            case 'listtasks':
                 callArgs.id = process.argv[cIndex + 2];
-                authorize(JSON.parse(content), listTasks);
+                authorize(JSON.parse(content), listtasks);
                 break;
-            case 'createTask':
+            case 'createtask':
                 callArgs.id = process.argv[cIndex + 2];
                 callArgs.task = {title: process.argv[cIndex + 3]};
                 authorize(JSON.parse(content), createTask);
@@ -168,7 +168,7 @@ function createTask(auth)
     });
 }
 
-function listTasks(auth)
+function listtasks(auth)
 {
     var service = google.tasks('v1');
     service.tasks.list({
@@ -207,7 +207,7 @@ function listTasks(auth)
                  {   // no parent, it's a root task.
                  parentStack = new Array();
                  }*/
-                //console.log(item);
+                console.log(item);
                 if (Date.parse(item.due) < Date.now())
                 {   // item overdue, show red.
                     console.log(chalk.red(' * '), item.title)
@@ -231,7 +231,7 @@ function listTasks(auth)
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listTaskLists(auth)
+function listtasklists(auth)
 {
     var service = google.tasks('v1');
     service.tasklists.list({
