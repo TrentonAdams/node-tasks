@@ -10,12 +10,12 @@ Assuming that you are running a bash command line, this is how you setup to run.
 == Debian ==
 Below are the instructions that work for a debian based system.
 
- sudo apt install nodejs npm
- git clone https://github.com/TrentonAdams/node-tasks.git
- cd node-tasks
- npm install
- ./tasks.js -h
- ./tasks.js -c listTaskLists # list all the tasks lists you have
+* sudo apt install nodejs npm
+* git clone https://github.com/TrentonAdams/node-tasks.git
+* cd node-tasks
+* npm install
+* ./tasks.js -h
+* ./tasks.js -c listTaskLists # list all the tasks lists you have
  
  The last command will ask you to authorize the app.  In your browser, go to the url provided.  Copy and paste the key given to you back into the command line application.
  
