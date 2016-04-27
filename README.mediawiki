@@ -16,9 +16,9 @@ Below are the instructions that work for a debian based system.
 * npm install
 * ./tasks.js -h
 * ./tasks.js -c listTaskLists # list all the tasks lists you have
- 
+
 The last command will ask you to authorize the app.  In your browser, go to the url provided.  Copy and paste the key given to you back into the command line application.
- 
+
 == Feature ==
 I'll be adding the following features...
 * use of names rather than IDs for the various commands
