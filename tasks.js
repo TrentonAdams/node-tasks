@@ -34,11 +34,14 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content)
     if (hIndex >= 1)
     {
         console.log(process.argv[0]);
-        console.log('\t-c [listtasklists,listtasks id,createTask id task_text]');
+        console.log(
+            '\t-c [listtasklists,listtasks id,createTask id task_text]');
         console.log('\te.g.');
         console.log('\t\t-c listtasklists');
-        console.log('\t\t-c listtasks MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA');
-        console.log('\t\t-c createtask MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA \'My new special task\'');
+        console.log(
+            '\t\t-c listtasks MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA');
+        console.log(
+            '\t\t-c createtask MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA \'My new special task\' [-d today|-d tomorrow]');
     }
     else
     {
@@ -153,12 +156,31 @@ function storeToken(token)
 function createTask(auth)
 {
     var service = google.tasks('v1');
-    console.log('callArgs: %o', callArgs);
-    service.tasks.insert({
+    var dIndex = process.argv.indexOf('-d');
+    var gtArgs = {
         tasklist: callArgs.id,
         auth: auth,
         resource: callArgs.task
-    }, function (err, response)
+    };
+
+    if (dIndex != -1)
+    {
+        var dueString = process.argv[dIndex + 1];
+        var date = new Date();
+        date.setHours(0, 0, 0, 0);
+        switch (dueString)
+        {
+            case 'today':
+                gtArgs.resource.due = date.toISOString();
+                break;
+            case 'tomorrow':
+                gtArgs.resource.due = new Date(date.getTime() +
+                    1000 * 60 * 60 * 24).toISOString();
+                break;
+        }
+    }
+    console.log('callArgs: %o', callArgs);
+    service.tasks.insert(gtArgs, function (err, response)
     {
         if (err)
         {
@@ -208,7 +230,7 @@ function listtasks(auth)
                  {   // no parent, it's a root task.
                  parentStack = new Array();
                  }*/
-                console.log(item);
+                //console.log(item);
                 if (Date.parse(item.due) < Date.now())
                 {   // item overdue, show red.
                     console.log(chalk.red(' * '), item.title)
