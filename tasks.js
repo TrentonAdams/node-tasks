@@ -231,13 +231,17 @@ function listtasks(auth)
                  parentStack = new Array();
                  }*/
                 //console.log(item);
-                if (Date.parse(item.due) < Date.now())
-                {   // item overdue, show red.
-                    console.log(chalk.red(' * '), item.title)
-                }
-                else if (item.status == 'completed')
+                if (item.status == 'completed')
                 {   // item completed, show green.
-                    console.log(chalk.green(' * '), item.title)
+                    console.log(chalk.grey(' * ' + item.title));
+                }
+                else if (Date.parse(item.due) < Date.now())
+                {   // item due today, show red.
+                    console.log(chalk.yellow(' * ' + item.title));
+                }
+                else if (Date.parse(item.due + 1000*60*60*24) < Date.now())
+                {   // item overdue, show red.
+                    console.log(chalk.red(' * ' + item.title));
                 }
                 else
                 {
