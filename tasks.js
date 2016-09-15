@@ -16,6 +16,7 @@ var TOKEN_PATH = TOKEN_DIR + 'tasks-nodejs-quickstart.json';
 //console.log('%o', process.argv);
 
 var callArgs = {};
+var result = {};
 
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', function processClientSecrets(err, content)
@@ -59,6 +60,10 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content)
                 callArgs.id = process.argv[cIndex + 2];
                 callArgs.task = {title: process.argv[cIndex + 3]};
                 authorize(JSON.parse(content), createTask);
+                break;
+            case 'pushdue':
+                callArgs.id = process.argv[cIndex + 2];
+                authorize(JSON.parse(content), pushdue);
                 break;
         }
     }
@@ -191,6 +196,47 @@ function createTask(auth)
     });
 }
 
+function pushdue(auth)
+{
+
+    var service = google.tasks('v1');
+    var results = listtasks(auth);
+    console.log("hello", results, result);
+/*    var gtArgs = {
+        tasklist: callArgs.tlid,
+        task: callArgs.tid,
+        auth: auth,
+        resource:
+    };
+
+    if (dIndex != -1)
+    {
+        var dueString = process.argv[dIndex + 1];
+        var date = new Date();
+        date.setHours(0, 0, 0, 0);
+        switch (dueString)
+        {
+            case 'today':
+                gtArgs.resource.due = date.toISOString();
+                break;
+            case 'tomorrow':
+                gtArgs.resource.due = new Date(date.getTime() +
+                    1000 * 60 * 60 * 24).toISOString();
+                break;
+        }
+    }
+    console.log('callArgs: %o', callArgs);
+    service.tasks.insert(gtArgs, function (err, response)
+    {
+        if (err)
+        {
+            console.log('The API returned an error: ' + err);
+            return;
+        }
+        console.log('return: %o ', response);
+    });*/
+}
+
 function listtasks(auth)
 {
     var service = google.tasks('v1');
@@ -205,6 +251,7 @@ function listtasks(auth)
             return;
         }
         var items = response.items;
+        result = items;
         if (items.length == 0)
         {
             console.log('No task lists found.');
@@ -250,7 +297,7 @@ function listtasks(auth)
             }
         }
     });
-
+    return result;
 }
 
 /**
@@ -263,6 +310,7 @@ function listtasklists(auth)
     var service = google.tasks('v1');
     service.tasklists.list({
         auth: auth,
+        maxResults: 100
     }, function (err, response)
     {
         if (err)
