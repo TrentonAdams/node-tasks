@@ -1,4 +1,4 @@
-#!/usr/bin/nodejs
+#!/usr/local/node-v4.5.0-linux-x64/bin/node
 
 var fs = require('fs');
 var readline = require('readline');
@@ -230,18 +230,17 @@ function listtasks(auth)
                  {   // no parent, it's a root task.
                  parentStack = new Array();
                  }*/
-                //console.log(item);
                 if (item.status == 'completed')
                 {   // item completed, show green.
                     console.log(chalk.grey(' * ' + item.title));
                 }
-                else if (Date.parse(item.due) < Date.now())
-                {   // item due today, show red.
-                    console.log(chalk.yellow(' * ' + item.title));
-                }
-                else if (Date.parse(item.due + 1000*60*60*24) < Date.now())
+                else if (Date.parse(item.due) + 1000*60*60*24 < Date.now())
                 {   // item overdue, show red.
                     console.log(chalk.red(' * ' + item.title));
+                }
+                else if (Date.parse(item.due) < Date.now())
+                {   // item due today, show orange.
+                    console.log(chalk.yellow(' * ' + item.title));
                 }
                 else
                 {
