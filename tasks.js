@@ -1,10 +1,12 @@
-#!/usr/local/node-v4.5.0-linux-x64/bin/node
+#!/usr/bin/env node
 
-var fs = require('fs');
-var readline = require('readline');
-var google = require('googleapis');
-var googleAuth = require('google-auth-library');
-var chalk = require('chalk');
+const fs = require('fs');
+const readline = require('readline');
+const google = require('googleapis');
+const googleAuth = require('google-auth-library');
+const chalk = require('chalk');
+
+const program = require('commander');
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/tasks-nodejs-quickstart.json
@@ -15,13 +17,35 @@ var TOKEN_PATH = TOKEN_DIR + 'tasks-nodejs-quickstart.json';
 
 //console.log('%o', process.argv);
 
+
+program
+    .command('list-task-lists')
+    .alias('ltl')
+    .description('Lists the google task lists available for the user')
+    .action(function (input, options) {
+        (async function () {
+            const clientSecret = fs.readFileSync('client_secret.json', 'utf-8');
+            // console.log('listing task lists: %o', JSON.parse(clientSecret));
+            authorize(JSON.parse(clientSecret), listtasklists);
+        })()
+            .then(() => {
+            })
+            .catch(e => console.error(e));
+    })
+    .on('--help', function () {
+        console.log('  Examples:');
+        console.log();
+        console.log('    $ tasks list-task-lists');
+        console.log();
+    });
+
+program.parse(process.argv);
+
 var callArgs = {};
 
 // Load client secrets from a local file.
-fs.readFile('client_secret.json', function processClientSecrets(err, content)
-{
-    if (err)
-    {
+fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+    if (err) {
         console.log('Error loading client secret file: ' + err);
         return;
     }
@@ -31,8 +55,7 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content)
     var cIndex = process.argv.indexOf('-c');
     var hIndex = process.argv.indexOf('-h');
 
-    if (hIndex >= 1)
-    {
+    if (hIndex >= 1) {
         console.log(process.argv[0]);
         console.log(
             '\t-c [listtasklists,listtasks id,createTask id task_text]');
@@ -42,15 +65,9 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content)
             '\t\t-c listtasks MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA');
         console.log(
             '\t\t-c createtask MDgxNjI2ODQ0MzE4Mjk5ODUzMzg6NTQzODEwODc2OjA \'My new special task\' [-d today|-d tomorrow]');
-    }
-    else
-    {
+    } else {
         var command = process.argv[cIndex + 1];
-        switch (command)
-        {
-            case 'listtasklists':
-                authorize(JSON.parse(content), listtasklists);
-                break;
+        switch (command) {
             case 'listtasks':
                 callArgs.id = process.argv[cIndex + 2];
                 authorize(JSON.parse(content), listtasks);
@@ -71,9 +88,8 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content)
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback)
-{
-//    console.log('%o', credentials)
+function authorize(credentials, callback) {
+    // console.log('%o', credentials)
     var clientSecret = credentials.installed.client_secret;
     var clientId = credentials.installed.client_id;
     var redirectUrl = credentials.installed.redirect_uris[0];
@@ -81,14 +97,10 @@ function authorize(credentials, callback)
     var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
     // Check if we have previously stored a token.
-    fs.readFile(TOKEN_PATH, function (err, token)
-    {
-        if (err)
-        {
+    fs.readFile(TOKEN_PATH, function (err, token) {
+        if (err) {
             getNewToken(oauth2Client, callback);
-        }
-        else
-        {
+        } else {
             oauth2Client.credentials = JSON.parse(token);
             callback(oauth2Client);
         }
@@ -103,8 +115,7 @@ function authorize(credentials, callback)
  * @param {getEventsCallback} callback The callback to call with the authorized
  *     client.
  */
-function getNewToken(oauth2Client, callback)
-{
+function getNewToken(oauth2Client, callback) {
     var authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES
@@ -114,13 +125,10 @@ function getNewToken(oauth2Client, callback)
         input: process.stdin,
         output: process.stdout
     });
-    rl.question('Enter the code from that page here: ', function (code)
-    {
+    rl.question('Enter the code from that page here: ', function (code) {
         rl.close();
-        oauth2Client.getToken(code, function (err, token)
-        {
-            if (err)
-            {
+        oauth2Client.getToken(code, function (err, token) {
+            if (err) {
                 console.log('Error while trying to retrieve access token', err);
                 return;
             }
@@ -136,25 +144,19 @@ function getNewToken(oauth2Client, callback)
  *
  * @param {Object} token The token to store to disk.
  */
-function storeToken(token)
-{
-    try
-    {
+function storeToken(token) {
+    try {
         fs.mkdirSync(TOKEN_DIR);
-    }
-    catch (err)
-    {
-        if (err.code != 'EEXIST')
-        {
+    } catch (err) {
+        if (err.code != 'EEXIST') {
             throw err;
         }
     }
-    fs.writeFile(TOKEN_PATH, JSON.stringify(token));
+    fs.writeFile(TOKEN_PATH, JSON.stringify(token), () => {});
     console.log('Token stored to ' + TOKEN_PATH);
 }
 
-function createTask(auth)
-{
+function createTask(auth) {
     var service = google.tasks('v1');
     var dIndex = process.argv.indexOf('-d');
     var gtArgs = {
@@ -163,13 +165,11 @@ function createTask(auth)
         resource: callArgs.task
     };
 
-    if (dIndex != -1)
-    {
+    if (dIndex != -1) {
         var dueString = process.argv[dIndex + 1];
         var date = new Date();
         date.setHours(0, 0, 0, 0);
-        switch (dueString)
-        {
+        switch (dueString) {
             case 'today':
                 gtArgs.resource.due = date.toISOString();
                 break;
@@ -180,10 +180,8 @@ function createTask(auth)
         }
     }
     console.log('callArgs: %o', callArgs);
-    service.tasks.insert(gtArgs, function (err, response)
-    {
-        if (err)
-        {
+    service.tasks.insert(gtArgs, function (err, response) {
+        if (err) {
             console.log('The API returned an error: ' + err);
             return;
         }
@@ -191,30 +189,23 @@ function createTask(auth)
     });
 }
 
-function listtasks(auth)
-{
+function listtasks(auth) {
     var service = google.tasks('v1');
     service.tasks.list({
         tasklist: callArgs.id,
         auth: auth
-    }, function (err, response)
-    {
-        if (err)
-        {
+    }, function (err, response) {
+        if (err) {
             console.log('The API returned an error: ' + err);
             return;
         }
         var items = response.items;
-        if (items.length == 0)
-        {
+        if (items.length == 0) {
             console.log('No task lists found.');
-        }
-        else
-        {
+        } else {
             console.log('Task lists:');
             var parentStack = new Array();
-            for (var i = 0; i < items.length; i++)
-            {
+            for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 /*                if (item.parent !== undefined)
                  {   // we have a parent
@@ -230,20 +221,13 @@ function listtasks(auth)
                  {   // no parent, it's a root task.
                  parentStack = new Array();
                  }*/
-                if (item.status == 'completed')
-                {   // item completed, show green.
+                if (item.status == 'completed') {   // item completed, show green.
                     console.log(chalk.grey(' * ' + item.title));
-                }
-                else if (Date.parse(item.due) + 1000*60*60*24 < Date.now())
-                {   // item overdue, show red.
+                } else if (Date.parse(item.due) + 1000 * 60 * 60 * 24 < Date.now()) {   // item overdue, show red.
                     console.log(chalk.red(' * ' + item.title));
-                }
-                else if (Date.parse(item.due) < Date.now())
-                {   // item due today, show orange.
+                } else if (Date.parse(item.due) < Date.now()) {   // item due today, show orange.
                     console.log(chalk.yellow(' * ' + item.title));
-                }
-                else
-                {
+                } else {
                     console.log(' * ', item.title)
                 }
             }
@@ -257,28 +241,21 @@ function listtasks(auth)
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listtasklists(auth)
-{
+function listtasklists(auth) {
     var service = google.tasks('v1');
     service.tasklists.list({
         auth: auth,
-    }, function (err, response)
-    {
-        if (err)
-        {
+    }, function (err, response) {
+        if (err) {
             console.log('The API returned an error: ' + err);
             return;
         }
         var items = response.items;
-        if (items.length == 0)
-        {
+        if (items.length == 0) {
             console.log('No task lists found.');
-        }
-        else
-        {
+        } else {
             console.log('Task lists:');
-            for (var i = 0; i < items.length; i++)
-            {
+            for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 console.log('%s (%s)', item.title, item.id);
             }
